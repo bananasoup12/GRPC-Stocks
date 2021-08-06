@@ -40,10 +40,14 @@ message RouteNote {
   string message = 1;
 }
 
+message HistoricalPriceInfo {
+  float price = 1;
+  string date = 2;
+}
 
 message Stock {
   string name = 1;
-  float price = 2;
+  repeated HistoricalPriceInfo historicalinfo = 2;
 }
 
 

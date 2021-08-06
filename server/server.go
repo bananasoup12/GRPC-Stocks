@@ -34,7 +34,7 @@ import (
 
 	"google.golang.org/grpc"
 
-	pb "github.com/stocks/routeguide"
+	pb "github.com/GRPC-Stocks/routeguide"
 )
 
 var (
@@ -55,9 +55,13 @@ type routeGuideServer struct {
 
 // GetFeature returns the feature at the given point.
 func (s *routeGuideServer) GetStock(ctx context.Context, stockname *pb.StockName) (*pb.Stock, error) {
-	
+    
+    historicalpriceinfo := []*pb.HistoricalPriceInfo{}
+    info1 := &pb.HistoricalPriceInfo{Date: "2021-02-01", Price: 100.00}
+    historicalpriceinfo = append(historicalpriceinfo, info1)
+    
 	// No feature was found, return an unnamed feature
-	return &pb.Stock{Name: "Gas", Price: 100.00}, nil
+	return &pb.Stock{Name: "GameStop", Historicalinfo: historicalpriceinfo}, nil
 }
 
 

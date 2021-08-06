@@ -33,7 +33,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/examples/data"
-	pb "github.com/stocks/routeguide"
+	pb "github.com/GRPC-Stocks/routeguide"
 )
 
 var (
@@ -50,7 +50,7 @@ func printStock(client pb.RouteGuideClient, stockname *pb.StockName) {
 	defer cancel()
 	stock, err := client.GetStock(ctx, stockname)
 	if err != nil {
-		log.Fatalf("%v.GetFeatures(_) = _, %v: ", client, err)
+		log.Fatalf("%v.GetStocks(_) = _, %v: ", client, err)
 	}
 	log.Println(stock)
 }
@@ -81,6 +81,6 @@ func main() {
 	client := pb.NewRouteGuideClient(conn)
 
 	// Looking for a valid feature
-	printStock(client, &pb.StockName{Name: "Gas"})
+	printStock(client, &pb.StockName{Name: "Gamestop"})
 
 }
