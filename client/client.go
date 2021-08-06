@@ -83,7 +83,8 @@ func main() {
 	client := pb.NewRouteGuideClient(conn)
 	
 	separator := strings.Repeat("--", 50)
-
+	
+	//Create and populate stock info
 	createStock(client, &pb.StockUpdate{Name: "Gamestop", Price: 4})
 	createStock(client, &pb.StockUpdate{Name: "AMC", Price: 1})
 	log.Println(separator)

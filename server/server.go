@@ -50,15 +50,17 @@ func (s *routeGuideServer) GetStock(ctx context.Context, stockname *pb.StockName
 // Creates a new stock
 func (s *routeGuideServer) CreateStock(ctx context.Context, stockupdate *pb.StockUpdate) (*pb.Error, error) {
     
-    currentTime := time.Now()
+    
     stockName := stockupdate.Name
-    historicalpriceinfo := []*pb.HistoricalPriceInfo{}
-    info1 := &pb.HistoricalPriceInfo{Date: currentTime.String(), Price: stockupdate.Price}
-    historicalpriceinfo = append(historicalpriceinfo, info1)
+    
 
     if _, ok := stockDB[stockName]; ok {
         return &pb.Error{Code: 1, Info: "Stock already exists"}, nil
     } else{
+        currentTime := time.Now()
+        historicalpriceinfo := []*pb.HistoricalPriceInfo{}
+        info := &pb.HistoricalPriceInfo{Date: currentTime.String(), Price: stockupdate.Price}
+        historicalpriceinfo = append(historicalpriceinfo, info)
         stockDB[stockName] = &pb.Stock{Name: stockName, Historicalinfo: historicalpriceinfo}
     }
 
@@ -69,15 +71,17 @@ func (s *routeGuideServer) CreateStock(ctx context.Context, stockupdate *pb.Stoc
 // Updates an existing stock by appending the new price to the historical price info array.
 func (s *routeGuideServer) UpdateStock(ctx context.Context, stockupdate *pb.StockUpdate) (*pb.Error, error) {
     
-    currentTime := time.Now()
+   
     stockName := stockupdate.Name
     
-    info1 := &pb.HistoricalPriceInfo{Date: currentTime.String(), Price: stockupdate.Price}
+    
     
 
     if _, ok := stockDB[stockName]; ok {
+        currentTime := time.Now()
+        info := &pb.HistoricalPriceInfo{Date: currentTime.String(), Price: stockupdate.Price}
         historicalpriceinfo := stockDB[stockName].Historicalinfo
-        historicalpriceinfo = append(historicalpriceinfo, info1)
+        historicalpriceinfo = append(historicalpriceinfo, info)
 
         stockDB[stockName] = &pb.Stock{Name: stockName, Historicalinfo: historicalpriceinfo}
     } else{
