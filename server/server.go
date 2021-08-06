@@ -1,25 +1,4 @@
-/*
- *
- * Copyright 2015 gRPC authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- */
 
-// Package main implements a simple gRPC server that demonstrates how to use gRPC-Go libraries
-// to perform unary, client streaming, server streaming and full duplex RPCs.
-//
-// It implements the route guide service whose definition can be found in routeguide/route_guide.proto.
 package main
 
 import (
@@ -56,7 +35,7 @@ type routeGuideServer struct {
 	routeNotes map[string][]*pb.RouteNote
 }
 
-// GetFeature returns the feature at the given point.
+// GetStock returns a stock of given name
 func (s *routeGuideServer) GetStock(ctx context.Context, stockname *pb.StockName) (*pb.Stock, error) {
     
     stockName := stockname.Name
@@ -64,16 +43,36 @@ func (s *routeGuideServer) GetStock(ctx context.Context, stockname *pb.StockName
         return stockDB[stockName], nil
     }
 
-	// No feature was found, return an unnamed feature
+	// No stock was found, return nil
 	return nil, nil
 }
 
+// Creates a new stock
 func (s *routeGuideServer) CreateStock(ctx context.Context, stockupdate *pb.StockUpdate) (*pb.Error, error) {
     
     currentTime := time.Now()
     stockName := stockupdate.Name
     historicalpriceinfo := []*pb.HistoricalPriceInfo{}
-    info1 := &pb.HistoricalPriceInfo{Date: currentTime.String(), Price: 100.00}
+    info1 := &pb.HistoricalPriceInfo{Date: currentTime.String(), Price: stockupdate.Price}
+    historicalpriceinfo = append(historicalpriceinfo, info1)
+
+    if _, ok := stockDB[stockName]; ok {
+        return &pb.Error{Code: 1, Info: "Stock already exists"}, nil
+    } else{
+        stockDB[stockName] = &pb.Stock{Name: stockName, Historicalinfo: historicalpriceinfo}
+    }
+
+	
+	return &pb.Error{Code: 0, Info: "No Error"}, nil
+}
+
+// Updates an existing stock by appending the new price to the historical price info array.
+func (s *routeGuideServer) UpdateStock(ctx context.Context, stockupdate *pb.StockUpdate) (*pb.Error, error) {
+    
+    currentTime := time.Now()
+    stockName := stockupdate.Name
+    historicalpriceinfo := []*pb.HistoricalPriceInfo{}
+    info1 := &pb.HistoricalPriceInfo{Date: currentTime.String(), Price: stockupdate.Price}
     historicalpriceinfo = append(historicalpriceinfo, info1)
 
     if _, ok := stockDB[stockName]; ok {
@@ -82,10 +81,10 @@ func (s *routeGuideServer) CreateStock(ctx context.Context, stockupdate *pb.Stoc
 
         stockDB[stockName] = &pb.Stock{Name: stockName, Historicalinfo: historicalpriceinfo}
     } else{
-        stockDB[stockName] = &pb.Stock{Name: stockName, Historicalinfo: historicalpriceinfo}
+        return &pb.Error{Code: 2, Info: "Stock does not exist"}, nil
     }
 
-	// No feature was found, return an unnamed feature
+	
 	return &pb.Error{Code: 0, Info: "No Error"}, nil
 }
 
@@ -93,16 +92,10 @@ func (s *routeGuideServer) CreateStock(ctx context.Context, stockupdate *pb.Stoc
 
 func newServer() *routeGuideServer {
 	s := &routeGuideServer{routeNotes: make(map[string][]*pb.RouteNote)}
-	s.loadFeatures(*jsonDBFile)
+	
 	return s
 }
 
-// loadFeatures loads features from a JSON file.
-func (s *routeGuideServer) loadFeatures(filePath string) {
-	
-	
-	
-}
 
 func initDB(){
     stockDB = make(map[string]*pb.Stock)

@@ -1,25 +1,4 @@
-/*
- *
- * Copyright 2015 gRPC authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- */
 
-// Package main implements a simple gRPC client that demonstrates how to use gRPC-Go libraries
-// to perform unary, client streaming, server streaming and full duplex RPCs.
-//
-// It interacts with the route guide service whose definition can be found in routeguide/route_guide.proto.
 package main
 
 import (
@@ -27,7 +6,7 @@ import (
 	"flag"
 	
 	"log"
-
+	"strings"
 	"time"
 
 	"google.golang.org/grpc"
@@ -43,7 +22,7 @@ var (
 	serverHostOverride = flag.String("server_host_override", "x.test.youtube.com", "The server name used to verify the hostname returned by the TLS handshake")
 )
 
-// printFeature gets the feature for the given point.
+//Print info for a given stock
 func printStock(client pb.RouteGuideClient, stockname *pb.StockName) {
 	log.Printf("Getting Stock with name (%d)", stockname.Name)
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -55,6 +34,7 @@ func printStock(client pb.RouteGuideClient, stockname *pb.StockName) {
 	log.Println(stock)
 }
 
+//Create a new stock
 func createStock(client pb.RouteGuideClient, stockupdate *pb.StockUpdate) {
 	log.Printf("Create Stock with info (%d, %d)", stockupdate.Name, stockupdate.Price)
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -62,6 +42,18 @@ func createStock(client pb.RouteGuideClient, stockupdate *pb.StockUpdate) {
 	error, err := client.CreateStock(ctx, stockupdate)
 	if err != nil {
 		log.Fatalf("%v.CreateStocks(_) = _, %v: ", client, err)
+	}
+	log.Println(error)
+}
+
+//Update an existing stock 
+func updateStock(client pb.RouteGuideClient, stockupdate *pb.StockUpdate) {
+	log.Printf("Update Stock with info (%d, %d)", stockupdate.Name, stockupdate.Price)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	error, err := client.UpdateStock(ctx, stockupdate)
+	if err != nil {
+		log.Fatalf("%v.UpdateStocks(_) = _, %v: ", client, err)
 	}
 	log.Println(error)
 }
@@ -89,9 +81,61 @@ func main() {
 	}
 	defer conn.Close()
 	client := pb.NewRouteGuideClient(conn)
+	
+	separator := strings.Repeat("--", 50)
 
-	createStock(client, &pb.StockUpdate{Name: "Gamestop", Price: 100})
-	// Looking for a valid feature
+	createStock(client, &pb.StockUpdate{Name: "Gamestop", Price: 4})
+	createStock(client, &pb.StockUpdate{Name: "AMC", Price: 1})
+	log.Println(separator)
+	time.Sleep(1 * time.Second)
+
+	updateStock(client, &pb.StockUpdate{Name: "Gamestop", Price: 5})
+	updateStock(client, &pb.StockUpdate{Name: "AMC", Price: 2})
 	printStock(client, &pb.StockName{Name: "Gamestop"})
+	printStock(client, &pb.StockName{Name: "AMC"})
+	log.Println(separator)
+	time.Sleep(1 * time.Second)
+
+	updateStock(client, &pb.StockUpdate{Name: "Gamestop", Price: 10})
+	updateStock(client, &pb.StockUpdate{Name: "AMC", Price: 5})
+	printStock(client, &pb.StockName{Name: "Gamestop"})
+	printStock(client, &pb.StockName{Name: "AMC"})
+	log.Println(separator)
+	time.Sleep(1 * time.Second)
+
+	updateStock(client, &pb.StockUpdate{Name: "Gamestop", Price: 20})
+	updateStock(client, &pb.StockUpdate{Name: "AMC", Price: 8})
+	printStock(client, &pb.StockName{Name: "Gamestop"})
+	printStock(client, &pb.StockName{Name: "AMC"})
+	log.Println(separator)
+	time.Sleep(1 * time.Second)
+
+	updateStock(client, &pb.StockUpdate{Name: "Gamestop", Price: 30})
+	updateStock(client, &pb.StockUpdate{Name: "AMC", Price: 12})
+	printStock(client, &pb.StockName{Name: "Gamestop"})
+	printStock(client, &pb.StockName{Name: "AMC"})
+	log.Println(separator)
+	time.Sleep(1 * time.Second)
+
+	updateStock(client, &pb.StockUpdate{Name: "Gamestop", Price: 50})
+	updateStock(client, &pb.StockUpdate{Name: "AMC", Price: 16})
+	printStock(client, &pb.StockName{Name: "Gamestop"})
+	printStock(client, &pb.StockName{Name: "AMC"})
+	log.Println(separator)
+	time.Sleep(1 * time.Second)
+
+	updateStock(client, &pb.StockUpdate{Name: "Gamestop", Price: 100})
+	updateStock(client, &pb.StockUpdate{Name: "AMC", Price: 18})
+	printStock(client, &pb.StockName{Name: "Gamestop"})
+	printStock(client, &pb.StockName{Name: "AMC"})
+	log.Println(separator)
+	time.Sleep(1 * time.Second)
+
+	updateStock(client, &pb.StockUpdate{Name: "Gamestop", Price: 200})
+	updateStock(client, &pb.StockUpdate{Name: "AMC", Price: 25})
+	printStock(client, &pb.StockName{Name: "Gamestop"})
+	printStock(client, &pb.StockName{Name: "AMC"})
+	log.Println(separator)
+
 
 }
