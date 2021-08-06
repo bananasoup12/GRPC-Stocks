@@ -71,12 +71,12 @@ func (s *routeGuideServer) UpdateStock(ctx context.Context, stockupdate *pb.Stoc
     
     currentTime := time.Now()
     stockName := stockupdate.Name
-    historicalpriceinfo := []*pb.HistoricalPriceInfo{}
+    
     info1 := &pb.HistoricalPriceInfo{Date: currentTime.String(), Price: stockupdate.Price}
-    historicalpriceinfo = append(historicalpriceinfo, info1)
+    
 
     if _, ok := stockDB[stockName]; ok {
-        historicalpriceinfo = stockDB[stockName].Historicalinfo
+        historicalpriceinfo := stockDB[stockName].Historicalinfo
         historicalpriceinfo = append(historicalpriceinfo, info1)
 
         stockDB[stockName] = &pb.Stock{Name: stockName, Historicalinfo: historicalpriceinfo}
