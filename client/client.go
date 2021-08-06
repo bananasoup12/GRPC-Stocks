@@ -55,6 +55,16 @@ func printStock(client pb.RouteGuideClient, stockname *pb.StockName) {
 	log.Println(stock)
 }
 
+func createStock(client pb.RouteGuideClient, stockupdate *pb.StockUpdate) {
+	log.Printf("Create Stock with info (%d, %d)", stockupdate.Name, stockupdate.Price)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	error, err := client.CreateStock(ctx, stockupdate)
+	if err != nil {
+		log.Fatalf("%v.CreateStocks(_) = _, %v: ", client, err)
+	}
+	log.Println(error)
+}
 
 func main() {
 	flag.Parse()
@@ -80,6 +90,7 @@ func main() {
 	defer conn.Close()
 	client := pb.NewRouteGuideClient(conn)
 
+	createStock(client, &pb.StockUpdate{Name: "Gamestop", Price: 100})
 	// Looking for a valid feature
 	printStock(client, &pb.StockName{Name: "Gamestop"})
 

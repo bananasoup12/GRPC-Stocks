@@ -26,13 +26,18 @@ service RouteGuide {
   
 
   rpc GetStock(StockName) returns (Stock) {}
-  rpc CreateStock(Stock) returns (Stock) {}
-  rpc UpdateStock(Stock) returns (Stock) {}
+  rpc CreateStock(StockUpdate) returns (Error) {}
+  rpc UpdateStock(StockUpdate) returns (Error) {}
 
 }
 
 message StockName {
   string name = 1;
+}
+
+message Error {
+  int32 code = 1;
+  string info = 2;
 }
 
 message RouteNote {
@@ -48,6 +53,11 @@ message HistoricalPriceInfo {
 message Stock {
   string name = 1;
   repeated HistoricalPriceInfo historicalinfo = 2;
+}
+
+message StockUpdate {
+  string name = 1;
+  float price = 2;
 }
 
 

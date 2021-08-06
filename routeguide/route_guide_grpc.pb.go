@@ -23,8 +23,8 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type RouteGuideClient interface {
 	GetStock(ctx context.Context, in *StockName, opts ...grpc.CallOption) (*Stock, error)
-	CreateStock(ctx context.Context, in *Stock, opts ...grpc.CallOption) (*Stock, error)
-	UpdateStock(ctx context.Context, in *Stock, opts ...grpc.CallOption) (*Stock, error)
+	CreateStock(ctx context.Context, in *StockUpdate, opts ...grpc.CallOption) (*Error, error)
+	UpdateStock(ctx context.Context, in *StockUpdate, opts ...grpc.CallOption) (*Error, error)
 }
 
 type routeGuideClient struct {
@@ -44,8 +44,8 @@ func (c *routeGuideClient) GetStock(ctx context.Context, in *StockName, opts ...
 	return out, nil
 }
 
-func (c *routeGuideClient) CreateStock(ctx context.Context, in *Stock, opts ...grpc.CallOption) (*Stock, error) {
-	out := new(Stock)
+func (c *routeGuideClient) CreateStock(ctx context.Context, in *StockUpdate, opts ...grpc.CallOption) (*Error, error) {
+	out := new(Error)
 	err := c.cc.Invoke(ctx, "/routeguide.RouteGuide/CreateStock", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -53,8 +53,8 @@ func (c *routeGuideClient) CreateStock(ctx context.Context, in *Stock, opts ...g
 	return out, nil
 }
 
-func (c *routeGuideClient) UpdateStock(ctx context.Context, in *Stock, opts ...grpc.CallOption) (*Stock, error) {
-	out := new(Stock)
+func (c *routeGuideClient) UpdateStock(ctx context.Context, in *StockUpdate, opts ...grpc.CallOption) (*Error, error) {
+	out := new(Error)
 	err := c.cc.Invoke(ctx, "/routeguide.RouteGuide/UpdateStock", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -67,8 +67,8 @@ func (c *routeGuideClient) UpdateStock(ctx context.Context, in *Stock, opts ...g
 // for forward compatibility
 type RouteGuideServer interface {
 	GetStock(context.Context, *StockName) (*Stock, error)
-	CreateStock(context.Context, *Stock) (*Stock, error)
-	UpdateStock(context.Context, *Stock) (*Stock, error)
+	CreateStock(context.Context, *StockUpdate) (*Error, error)
+	UpdateStock(context.Context, *StockUpdate) (*Error, error)
 	mustEmbedUnimplementedRouteGuideServer()
 }
 
@@ -79,10 +79,10 @@ type UnimplementedRouteGuideServer struct {
 func (UnimplementedRouteGuideServer) GetStock(context.Context, *StockName) (*Stock, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetStock not implemented")
 }
-func (UnimplementedRouteGuideServer) CreateStock(context.Context, *Stock) (*Stock, error) {
+func (UnimplementedRouteGuideServer) CreateStock(context.Context, *StockUpdate) (*Error, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateStock not implemented")
 }
-func (UnimplementedRouteGuideServer) UpdateStock(context.Context, *Stock) (*Stock, error) {
+func (UnimplementedRouteGuideServer) UpdateStock(context.Context, *StockUpdate) (*Error, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateStock not implemented")
 }
 func (UnimplementedRouteGuideServer) mustEmbedUnimplementedRouteGuideServer() {}
@@ -117,7 +117,7 @@ func _RouteGuide_GetStock_Handler(srv interface{}, ctx context.Context, dec func
 }
 
 func _RouteGuide_CreateStock_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Stock)
+	in := new(StockUpdate)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -129,13 +129,13 @@ func _RouteGuide_CreateStock_Handler(srv interface{}, ctx context.Context, dec f
 		FullMethod: "/routeguide.RouteGuide/CreateStock",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RouteGuideServer).CreateStock(ctx, req.(*Stock))
+		return srv.(RouteGuideServer).CreateStock(ctx, req.(*StockUpdate))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _RouteGuide_UpdateStock_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Stock)
+	in := new(StockUpdate)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -147,7 +147,7 @@ func _RouteGuide_UpdateStock_Handler(srv interface{}, ctx context.Context, dec f
 		FullMethod: "/routeguide.RouteGuide/UpdateStock",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RouteGuideServer).UpdateStock(ctx, req.(*Stock))
+		return srv.(RouteGuideServer).UpdateStock(ctx, req.(*StockUpdate))
 	}
 	return interceptor(ctx, in, info, handler)
 }
